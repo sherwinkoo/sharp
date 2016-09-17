@@ -87,3 +87,10 @@ ENV/
 
 # Rope project settings
 .ropeproject
+.DS_Store
+*.pyc
+bin/
+include/
+lib/
+pip-selfcheck.json
+.Python
