@@ -18,48 +18,81 @@
     <![endif]-->
   </head>
   <body>
-
-      <form id="search" action="" method="GET">
-          <input name="keyword" type="text" value="输入影片名字"/>
-          <input type="submit" value="搜索"/>
-      </form>
-
+    <div class="container">
+        <div class="row search">
+            <div class="col-md-8 col-sm-10">
+                 <div class="input-group">
+                    <input type="text" class="form-control" id="search-keyword" value="变形金刚">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="search">搜一下</button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-2"></div>
+        </div>
+        <div class="row results">
+            <div class="col-md-8 col-sm-10">
+                <ul class="list-group">
+                    <li class="list-group-item" id="result-item-0"/>
+                    <li class="list-group-item" id="result-item-1"/>
+                    <li class="list-group-item" id="result-item-2"/>
+                    <li class="list-group-item" id="result-item-3"/>
+                    <li class="list-group-item" id="result-item-4"/>
+                    <li class="list-group-item" id="result-item-5"/>
+                    <li class="list-group-item" id="result-item-6"/>
+                    <li class="list-group-item" id="result-item-7"/>
+                    <li class="list-group-item" id="result-item-8"/>
+                    <li class="list-group-item" id="result-item-9"/>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
     <script>
-//将form中的值转换为键值对。
-function getFormJson(frm) {
-    var o = {};
-    var a = $(frm).serializeArray();
-    $.each(a, function () {
-        if (o[this.name] !== undefined) {
-            if (!o[this.name].push) {
-                o[this.name] = [o[this.name]];
-            }
-            o[this.name].push(this.value || '');
-        } else {
-            o[this.name] = this.value || '';
-        }
-    });
-
-    return o;
-}
-
         $(document).ready(function(){
-            $("#search").bind('submit', function(){
-                var data = getFormJson(this);
+            $("#results").hide();
+            $("#search").bind('click', function(){
+                clean_results();
+                $("#results").show();
+                var keyword = $("#search-keyword")[0].value;
                 $.ajax({
-                    url: '/api/v1/xunbo/' + data.keyword,
+                    url: '/api/v1/search/'+ keyword,
                     type: 'GET',
-                    success: function(data){
-                        console.log(data);
-                    }
+                    success: on_search_success
                 });
-                return false;
             });
         });
+        function on_search_success(results) {
+            console.log(results);
+            if (results.length == 0) {
+                console.log("no results");
+            } else {
+                for (var i = 0; i < 10 && i < results.length; i++) {
+                    result = results[i];
+                    var content = '<h4 class="list-group-item-heading">' + result.name + '</h4>';
+                    for (var j = 0; j < result.downlist.length; j++) {
+                        if (result.downlist[j].name.length == 0) {
+                            var name = result.name;
+                        } else {
+                            var name = result.downlist[j].name;
+                        }
+                        content += '<br/><a href="' + result.downlist[j].download_url + '">' + name + '</a>';
+                    }
+                    $("#result-item-" + i).html(content);
+                }
+            }
+        }
+        function on_search_error(data) {
+
+        }
+        function clean_results() {
+            for (var i = 0; i < 10; i++) {
+                $("#result-item-" + i).html("");
+            }
+        }
 </script>
   </body>
 </html>
