@@ -75,8 +75,8 @@ class XunboHandler(object):
 
         r = requests.post(self.SEARCH_URL, data=dict(
             typeid=2,
-            input=u'搜索'.encode('gb2312'),
-            keyword=keyword.encode('gb2312')))
+            input=u'搜索'.encode('gbk'),
+            keyword=keyword.encode('gbk')))
         return self.parse_search_list(r.content)
 
     def search(self, keyword):
