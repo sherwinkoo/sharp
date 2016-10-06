@@ -37,7 +37,7 @@ class StorageLoop(object):
             films = engine.search(name)
             # print [film['name'] for film in films]
             names = ', '.join([film['name'] for film in films]).decode('utf-8')
-            # logging.info("search from %s: %s-%s", engine.SOURCE, name, names)
+            logging.info("search from %s: %s-%s", engine.SOURCE, name, names)
             results.extend(films)
 
         return self.merge_films(results)
@@ -69,6 +69,8 @@ class StorageLoop(object):
 
                 try:
                     # 2. 依次启动个搜索引擎搜索，合并结果
+                    if isinstance(name, str):
+                        name = name.decode('utf-8')
                     result = self.do_search_engine(name)
                 except:
                     if name is not None:
