@@ -22,7 +22,7 @@ class XunboBase(object):
     def request(self, url):
         import subprocess
         try:
-            content = subprocess.check_output(['curl', url])
+            content = subprocess.check_output(['curl', url], stderr=subprocess.PIPE)
         except Exception as ex:
             logging.error("CURL: %s, %s", url, ex)
             return ''
