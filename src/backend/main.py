@@ -37,5 +37,12 @@ def search_api(keyword):
     return jsonify(results)
 
 
+@app.route('/tasks')
+def tasks_view():
+    from storage import TaskManager
+    status = TaskManager().status()
+    return jsonify(status)
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

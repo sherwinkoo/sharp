@@ -53,17 +53,20 @@ class MainLoop(object):
                     brief = task['data']
                     self.task_manager.doing(task)
                     downlist = self.do_search_engine(brief)
+
+                    # 3. 保存结果到redis
+                    self.storage.save_downlist(brief['name'], downlist)
+                    self.task_manager.done(task)
                 except:
                     self.task_manager.add(brief)
                     raise
 
-                # 3. 保存结果到redis
-                self.storage.save_downlist(brief['name'], downlist)
             except Exception as ex:
                 raise
                 logging.error(ex)
 
             time.sleep(0.5)
+            break
 
 
 if __name__ == "__main__":

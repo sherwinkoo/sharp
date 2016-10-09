@@ -31,6 +31,16 @@ class TaskManager(object):
         self.cache.delete('movie:doing:{}'.format(task['tid']))
         self.cache.rpush('movie:queue:done', json.dumps(task))
 
+    def status(self):
+        tasks_waited = self.cache.lrange('movie:queue:wait', 0, -1)
+        tasks_done = self.cache.lrange('movie:queue:done', 0, -1)
+        tasks_doing = self.cache.mget(self.cache.keys("movie:doing:*"))
+        return {
+            "waited": dict(count=len(tasks_waited), tasks=[json.loads(t) for t in tasks_waited]),
+            "doing": dict(count=len(tasks_doing), tasks=[json.loads(t) for t in tasks_doing]),
+            "done": dict(count=len(tasks_done), tasks=[json.loads(t) for t in tasks_done]),
+        }
+
 
 class MovieStorage(object):
     cache = Redis()
