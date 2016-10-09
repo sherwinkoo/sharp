@@ -66,7 +66,6 @@ class MainLoop(object):
                 logging.error(ex)
 
             time.sleep(0.5)
-            break
 
 
 if __name__ == "__main__":
