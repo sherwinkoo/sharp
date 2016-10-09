@@ -32,13 +32,19 @@ class TaskManager(object):
         self.cache.rpush('movie:queue:done', json.dumps(task))
 
     def status(self):
-        tasks_waited = self.cache.lrange('movie:queue:wait', 0, -1)
-        tasks_done = self.cache.lrange('movie:queue:done', 0, -1)
+        tasks_waited_top10 = self.cache.lrange('movie:queue:wait', 0, 10)
+        tasks_done_tail10 = self.cache.lrange('movie:queue:done', -10, -1)
         tasks_doing = self.cache.mget(self.cache.keys("movie:doing:*"))
         return {
-            "waited": dict(count=len(tasks_waited), tasks=[json.loads(t) for t in tasks_waited]),
-            "doing": dict(count=len(tasks_doing), tasks=[json.loads(t) for t in tasks_doing]),
-            "done": dict(count=len(tasks_done), tasks=[json.loads(t) for t in tasks_done]),
+            "waited": dict(
+                count=self.cache.llen('movie:queue:wait'),
+                top10=[json.loads(t) for t in tasks_waited_top10]),
+            "doing": dict(
+                count=len(tasks_doing),
+                all=[json.loads(t) for t in tasks_doing]),
+            "done": dict(
+                count=self.cache.llen('movie:queue:done'),
+                tail10=[json.loads(t) for t in tasks_done_tail10]),
         }
 
 
