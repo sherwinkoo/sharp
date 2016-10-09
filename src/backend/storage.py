@@ -34,7 +34,12 @@ class TaskManager(object):
     def status(self):
         tasks_waited_top10 = self.cache.lrange('movie:queue:wait', 0, 10)
         tasks_done_tail10 = self.cache.lrange('movie:queue:done', -10, -1)
-        tasks_doing = self.cache.mget(self.cache.keys("movie:doing:*"))
+        doing_keys = self.cache.keys("movie:doing:*")
+        if doing_keys:
+            tasks_doing = self.cache.mget(doing_keys)
+        else:
+            tasks_doing = []
+
         return {
             "waited": dict(
                 count=self.cache.llen('movie:queue:wait'),
