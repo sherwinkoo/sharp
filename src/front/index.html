@@ -16,6 +16,24 @@
       <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <style type="text/css">
+    .search {
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+    .results {
+        margin-top: 20px;
+    }
+    .list-group {
+        border: 0px;
+    }
+    .list-group-item {
+        border: 0px;
+    }
+    .item-content span {
+        margin-right: 5px;
+    }
+    </style>
   </head>
   <body>
     <div class="container">
@@ -32,17 +50,7 @@
         </div>
         <div class="row results">
             <div class="col-md-8 col-sm-10">
-                <ul class="list-group">
-                    <li class="list-group-item" id="result-item-0"/>
-                    <li class="list-group-item" id="result-item-1"/>
-                    <li class="list-group-item" id="result-item-2"/>
-                    <li class="list-group-item" id="result-item-3"/>
-                    <li class="list-group-item" id="result-item-4"/>
-                    <li class="list-group-item" id="result-item-5"/>
-                    <li class="list-group-item" id="result-item-6"/>
-                    <li class="list-group-item" id="result-item-7"/>
-                    <li class="list-group-item" id="result-item-8"/>
-                    <li class="list-group-item" id="result-item-9"/>
+                <ul id="result-items" class="list-group"></ul>
                 </div>
             </div>
         </div>
@@ -70,19 +78,25 @@
             if (results.length == 0) {
                 console.log("no results");
             } else {
+                var content = "";
                 for (var i = 0; i < 10 && i < results.length; i++) {
                     result = results[i];
-                    var content = '<h4 class="list-group-item-heading">' + result.name + '</h4>';
+                    content += '<li class="list-group-item" id="result-item-' + i + '"/>'
+                    content += '<h4 class="list-group-item-heading">' + result.name + '</h4>';
                     for (var j = 0; j < result.downlist.length; j++) {
                         if (result.downlist[j].name.length == 0) {
                             var name = result.name;
                         } else {
                             var name = result.downlist[j].name;
                         }
-                        content += '<br/><a href="' + result.downlist[j].download_url + '">' + name + '</a>';
+                        content += '<div class="item-content">'
+                        content += '<span class="label label-success">' + result.downlist[j].source + '</span>';
+                        content += '<a href="' + result.downlist[j].download_url + '">' + name + '</a>';
+                        content += '</div>';
                     }
-                    $("#result-item-" + i).html(content);
+                    content += '</li>'
                 }
+                $("#result-items")[0].innerHTML = content;
             }
         }
         function on_search_error(data) {
