@@ -41,11 +41,12 @@ body {
 .results {
     margin-top: 20px;
 }
-.list-group {
-    border: 0px;
+.results div ul {
+    box-shadow: none;
 }
 .list-group-item {
     border: 0px;
+    background: transparent;
 }
 .item-content span {
     margin-right: 5px;
