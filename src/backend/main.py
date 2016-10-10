@@ -32,7 +32,7 @@ def search_api(keyword):
     else:
         results = []
     results = [json.loads(r) for r in results]
-    results = filter(lambda r: len(r['downlist']) > 0, results)
+    # results = filter(lambda r: len(r['downlist']) > 0, results)
     results = sorted(results, key=lambda x: x['name'])
     return jsonify(results)
 
