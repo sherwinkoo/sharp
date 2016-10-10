@@ -9,6 +9,8 @@
     <!-- Bootstrap -->
     <link href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/static/css/main.css">
+
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -16,38 +18,15 @@
       <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <style type="text/css">
-    .search {
-        margin-top: 20px;
-        margin-bottom: 10px;
-    }
-    .results {
-        margin-top: 20px;
-    }
-    .list-group {
-        border: 0px;
-    }
-    .list-group-item {
-        border: 0px;
-    }
-    .item-content span {
-        margin-right: 5px;
-    }
-    </style>
   </head>
   <body>
     <div class="container">
-        <div class="row search">
-            <div class="col-md-8 col-sm-10">
-                 <div class="input-group">
-                    <input type="text" class="form-control" id="search-keyword" value="变形金刚">
-                    <span class="input-group-btn">
-                        <button class="btn btn-default" type="button" id="search">搜一下</button>
-                    </span>
-                </div>
-            </div>
-            <div class="col-md-4 col-sm-2"></div>
+      <div class="header-search">
+         <div class="search-input-box">
+            <input type="text" class="search-input" id="search-keyword" value="变形金刚">
+            <a id="search-button" href="#"></a>
         </div>
+      </div>
         <div class="row results">
             <div class="col-md-8 col-sm-10">
                 <ul id="result-items" class="list-group"></ul>
@@ -62,7 +41,7 @@
     <script>
         $(document).ready(function(){
             $("#results").hide();
-            $("#search").bind('click', function(){
+            $("#search-button").bind('click', function(){
                 clean_results();
                 $("#results").show();
                 var keyword = $("#search-keyword")[0].value;
