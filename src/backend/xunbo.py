@@ -197,10 +197,14 @@ class XunboHandler(XunboBase):
     def parse_story(self, div):
         return div.text
 
-    def detail(self, name, url):
-        content = self.request(url)
+    def detail(self, name, url, retry=3):
+        for i in range(0, retry):
+            content = self.request(url)
 
-        info = self.parse_page(content)
+            info = self.parse_page(content)
+            if not info['downlist']:
+                continue
+
         if not info['downlist']:
             logging.error("PARSE downlist: %s", url)
         else:
