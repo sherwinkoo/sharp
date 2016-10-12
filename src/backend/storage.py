@@ -65,6 +65,9 @@ class MovieStorage(object):
         else:
             movie = detail
 
+        if not detail.get('name'):
+            movie['name'] = name
+
         down_urls = set([down['download_url'] for down in movie['downlist']])
         for down in detail['downlist']:
             if down['download_url'] in down_urls:
@@ -76,6 +79,8 @@ class MovieStorage(object):
     def _update_dict(self, origin, new, excludes=[]):
         for k, v in new.iteritems():
             if k in excludes:
+                continue
+            if not v:
                 continue
             origin[k] = v
         return origin
