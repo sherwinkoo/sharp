@@ -214,7 +214,7 @@ if __name__ == "__main__":
         format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
         datefmt='%a, %d %b %Y %H:%M:%S',
     )
-    # XunboSpider().start(1)
+    XunboSpider().start(1)
 
     # XunboHandler().search('暮光之城4')
     # XunboHandler().detail(u'XXX', 'http://www.4567.tv/film/id23892.html')
@@ -224,5 +224,3 @@ if __name__ == "__main__":
     # for m in ml:
     #     print m['name'], m['download_url']
     # XunboSpider().fetch_list(t=15, page=2)
-    with open('id24111.html', 'rt') as f:
-        print XunboHandler().parse_page(f.read())
