@@ -56,18 +56,26 @@ class TaskManager(object):
 class MovieStorage(object):
     cache = Redis()
 
-    def save_downlist(self, name, downlist):
+    def save_detail(self, name, detail):
         key = "film:" + base64.b64encode(safe_utf8(name))
         movie = self.cache.get(key)
         if movie:
             movie = json.loads(movie)
+            movie = self._update_dict(movie, detail, excludes=('downlist'))
         else:
-            movie = dict(name=name, downlist=[])
+            movie = detail
 
         down_urls = set([down['download_url'] for down in movie['downlist']])
-        for down in downlist:
+        for down in detail['downlist']:
             if down['download_url'] in down_urls:
                 continue
             movie['downlist'].append(down)
 
         self.cache.set(key, json.dumps(movie))
+
+    def _update_dict(self, origin, new, excludes=[]):
+        for k, v in new.iteritems():
+            if k in excludes:
+                continue
+            origin[k] = v
+        return origin

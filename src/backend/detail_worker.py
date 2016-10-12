@@ -33,9 +33,9 @@ class MainLoop(object):
             name = name.decode('utf-8')
 
         engine = self._get_engine(brief)
-        downlist = engine.detail(name, detail_url)
+        info = engine.detail(name, detail_url)
 
-        return downlist
+        return info
 
     def start(self):
         import time
@@ -52,10 +52,10 @@ class MainLoop(object):
                     # 2. 依次启动个搜索引擎搜索，合并结果
                     brief = task['data']
                     self.task_manager.doing(task)
-                    downlist = self.do_search_engine(brief)
+                    detail = self.do_search_engine(brief)
 
                     # 3. 保存结果到redis
-                    self.storage.save_downlist(brief['name'], downlist)
+                    self.storage.save_detail(brief['name'], detail)
                     self.task_manager.done(task)
                 except:
                     self.task_manager.add(brief)
