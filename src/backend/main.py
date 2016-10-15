@@ -6,6 +6,7 @@ import base64
 import redis
 from flask import Flask
 from flask import jsonify
+from flask import request
 
 cache = redis.Redis()
 
@@ -18,7 +19,7 @@ def main():
         return f.read()
 
 
-@app.route('/api/v1/search/<keyword>/')
+@app.route('/api/v1/search/<keyword>/', methods=['GET'])
 def search_api(keyword):
     keyword = keyword.encode('utf-8')
     targets = []
@@ -34,6 +35,25 @@ def search_api(keyword):
     results = [json.loads(r) for r in results]
     # results = filter(lambda r: len(r['downlist']) > 0, results)
     results = sorted(results, key=lambda x: x['name'])
+    return jsonify(results)
+
+
+@app.route('/api/v1/movies', methods=['GET'])
+def movies_list():
+    page = request.args.get('page', 1)
+    page_size = request.args.get('page_size', 24)
+
+    targets = []
+    keys = cache.keys("film:*")
+    targets = keys[(page - 1) * page_size:page * page_size]
+
+    if targets:
+        results = cache.mget(targets)
+    else:
+        results = []
+    results = [json.loads(r) for r in results]
+    # results = filter(lambda r: len(r['downlist']) > 0, results)
+    # results = sorted(results, key=lambda x: x['name'])
     return jsonify(results)
 
 
