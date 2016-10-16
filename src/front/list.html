@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>影先锋</title>
+
+    <!-- Bootstrap -->
+    <link href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/static/css/main.css">
+
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="header-search">
+         <div class="search-input-box">
+            <input type="text" class="search-input" id="search-keyword" value="变形金刚">
+            <a id="search-button" href="#"></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container movie-list">
+    </div>
+    <div class="container">
+        <nav>
+          <ul class="pagination pagination-lg" style="float: right;">
+          </ul>
+        </nav>
+    </div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            request_page(1)
+        });
+
+        function request_page(page) {
+            $.ajax({
+                url: '/api/v1/movies?page=' + page,
+                type: 'GET',
+                success: on_list_success
+            });
+        }
+
+        function on_list_success(result) {
+            console.log(result);
+            if (result.movies.length == 0) {
+                console.log("no results");
+            } else {
+                var content = "";
+                var i = 0;
+                while (i < result.movies.length) {
+                    content += '<div class="row movie-row">';
+                    for (var j = 0; j < 6 && i + j < result.movies.length; j++) {
+                        movie = result.movies[i + j];
+                        content += '<div class="col-md-2 col-sm-2 movie">';
+                        content += '<a href="#" class="movie-link">';
+                        content += '<img src="' + movie.poster + '" class="movie-thumb"></img>';
+                        content += '<p class="movie-title">' + movie.name.substr(0, 8) + '</p>';
+                        content += '</a>';
+                        content += '</div>';
+                    }
+                    i = i + j;
+                    content += '</div>';
+                }
+                $(".movie-list")[0].innerHTML = content;
+                pagination(result.pagination.current_page, result.pagination.page_size, result.pagination.total_size);
+            }
+        }
+        function pagination(current_page, page_size, total_size) {
+            var total_page = total_size / page_size;
+            var content = "";
+            if (current_page - 3 > 0) {
+                content += '<li onclick="request_page(' + (current_page - 3) + ')"><a href="#">&laquo;</a></li>';
+            } else {
+                content += '<li class="disable"><a href="#">&laquo;</a></li>'
+            }
+            for (var i = current_page - 2; i <= current_page + 2 && i <= total_page; i++) {
+                if (i <= 0) {
+                    continue;
+                }
+                if (i == current_page) {
+                    content += '<li class="active" onclick="request_page(' + i + ');"><a href="#">' + i + '</a></li>';
+                } else {
+                    content += '<li onclick="request_page(' + i + ');"><a href="#">' + i + '</a></li>';
+                }
+
+            }
+            if (current_page + 3 > 0) {
+                content += '<li onclick="request_page(' + (current_page + 3) + ')"><a href="#">&raquo;</a></li>';
+            } else {
+                content += '<li class="disable"><a href="#">&raquo;</a></li>'
+            }
+            $(".pagination")[0].innerHTML = content;
+        }
+</script>
+  </body>
+</html>

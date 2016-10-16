@@ -19,6 +19,12 @@ def main():
         return f.read()
 
 
+@app.route('/list.html')
+def list_view():
+    with open('front/list.html', 'rt') as f:
+        return f.read()
+
+
 @app.route('/api/v1/search/<keyword>/', methods=['GET'])
 def search_api(keyword):
     keyword = keyword.encode('utf-8')
@@ -40,21 +46,25 @@ def search_api(keyword):
 
 @app.route('/api/v1/movies', methods=['GET'])
 def movies_list():
-    page = request.args.get('page', 1)
-    page_size = request.args.get('page_size', 24)
+    page = int(request.args.get('page', 1))
+    page_size = int(request.args.get('page_size', 24))
+    total_size = 1024
 
-    targets = []
+    movies = []
     keys = cache.keys("film:*")
     targets = keys[(page - 1) * page_size:page * page_size]
-
     if targets:
-        results = cache.mget(targets)
-    else:
-        results = []
-    results = [json.loads(r) for r in results]
+        movies = cache.mget(targets)
+    movies = [json.loads(m) for m in movies]
     # results = filter(lambda r: len(r['downlist']) > 0, results)
     # results = sorted(results, key=lambda x: x['name'])
-    return jsonify(results)
+    result = dict(
+        movies=movies,
+        pagination=dict(
+            current_page=page,
+            page_size=page_size,
+            total_size=total_size))
+    return jsonify(result)
 
 
 @app.route('/tasks')
@@ -65,4 +75,5 @@ def tasks_view():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    from settings import DEBUG
+    app.run(host='0.0.0.0', debug=DEBUG)

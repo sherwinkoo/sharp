@@ -51,3 +51,16 @@ body {
 .item-content span {
     margin-right: 5px;
 }
+
+.movie-list {
+    text-align: center;
+}
+.movie-row {
+    margin-top: 40px;
+}
+
+.movie-thumb {
+}
+.movie-title {
+    margin-top: 10px;
+}
