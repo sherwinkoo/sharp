@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import json
-import base64
-
 from pymongo import MongoClient
 
 from flask import Flask
@@ -34,7 +31,6 @@ def search_api(keyword):
     movies = list(movies)
     for m in movies:
         del m['_id']
-    return jsonify(list(movies))
 
     movies = sorted(movies, key=lambda x: x['name'])
     return jsonify(movies)
@@ -43,17 +39,18 @@ def search_api(keyword):
 @app.route('/api/v1/movies', methods=['GET'])
 def movies_list():
     page = int(request.args.get('page', 1))
+    if page < 1:
+        page = 1
     page_size = int(request.args.get('page_size', 24))
     total_size = 1024
 
-    movies = []
-    keys = cache.keys("film:*")
-    targets = keys[(page - 1) * page_size:page * page_size]
-    if targets:
-        movies = cache.mget(targets)
-    movies = [json.loads(m) for m in movies]
-    # results = filter(lambda r: len(r['downlist']) > 0, results)
-    # results = sorted(results, key=lambda x: x['name'])
+    movies = movie_doc.find()
+    movies = list(movies)
+    for m in movies:
+        del m['_id']
+    movies = sorted(movies, key=lambda x: x['name'])
+
+    movies = movies[(page - 1) * page_size:page * page_size]
     result = dict(
         movies=movies,
         pagination=dict(
