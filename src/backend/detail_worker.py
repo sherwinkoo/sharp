@@ -26,13 +26,11 @@ class MainLoop(object):
             return None
         return engine[0]
 
-    def do_search_engine(self, brief):
-        name = brief['name']
-        detail_url = brief['detail_url']
+    def do_search_engine(self, name, detail_url):
         if isinstance(name, str):
             name = name.decode('utf-8')
 
-        engine = self._get_engine(brief)
+        engine = self._get_engine(detail_url)
         info = engine.detail(name, detail_url)
 
         return info
@@ -52,7 +50,7 @@ class MainLoop(object):
                     # 2. 依次启动个搜索引擎搜索，合并结果
                     brief = task['data']
                     self.task_manager.doing(task)
-                    detail = self.do_search_engine(brief)
+                    detail = self.do_search_engine(brief['name'], brief['detail_url'])
 
                     # 3. 保存结果到redis
                     self.storage.save_detail(brief['name'], detail)

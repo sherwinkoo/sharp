@@ -58,15 +58,3 @@ def movies_list():
             page_size=page_size,
             total_size=total_size))
     return jsonify(result)
-
-
-@app.route('/tasks')
-def tasks_view():
-    from storage import TaskManager
-    status = TaskManager().status()
-    return jsonify(status)
-
-
-if __name__ == '__main__':
-    from settings import DEBUG
-    app.run(host='0.0.0.0', port=5000, debug=DEBUG)
