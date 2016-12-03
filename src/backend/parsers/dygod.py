@@ -9,7 +9,8 @@ class DygodParser(object):
 
     def __init__(self, url=None):
         self.url = url
-        self.domain = urlparse.urlparse(url).hostname
+        r = urlparse.urlparse(url)
+        self.domain = r.scheme + "://" + r.hostname
 
     def parse_list(self, content):
         soup = BeautifulSoup(content, 'html.parser')

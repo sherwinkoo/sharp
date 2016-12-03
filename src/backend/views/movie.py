@@ -5,17 +5,17 @@ from pymongo import MongoClient
 from flask import Flask
 from flask import jsonify
 from flask import request
+from flask import render_template
+
+from backend.foundation import app
+
 
 client = MongoClient()
 movie_doc = client['movie-db']['movie']
 
-app = Flask(__name__)
-
-
 @app.route('/')
 def main():
-    with open('front/index.html', 'rt') as f:
-        return f.read()
+    return render_template('index.html')
 
 
 @app.route('/list.html')

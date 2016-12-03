@@ -4,9 +4,9 @@ from pprint import pprint
 
 from flask_script import Manager
 
-from foundation import app
-from foundation import db
-from models import * # noqa
+from backend.foundation import app
+from backend.foundation import db
+from backend.models import * # noqa
 
 manager = Manager(app)
 
@@ -48,6 +48,12 @@ def test_parser():
 def test_parse_list(url):
     from tasks import fetch_dygod_country_page
     fetch_dygod_country_page(url)
+
+
+@manager.command
+def start_dygod():
+    from backend.tasks import fetch_dygod
+    fetch_dygod.delay()
 
 
 if __name__ == "__main__":

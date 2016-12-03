@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from foundation import db
+from backend.foundation import db
 
 
 class Movie(db.Model):
