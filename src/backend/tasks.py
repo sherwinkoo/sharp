@@ -2,9 +2,12 @@
 
 import logging
 
-from foundation import celery as app_celery
-from utils import http_get
-from storage import MovieStorage
+from backend.foundation import celery as app_celery
+from backend.utils import http_get, thunder_encode
+from backend.common import fetch_poster
+
+from backend.parsers.dygod import DygodParser
+from backend.storage import MovieStorage
 
 
 @app_celery.task(queue='dygod')
@@ -16,7 +19,6 @@ def fetch_dygod():
 
 @app_celery.task(queue='dygod')
 def fetch_dygod_country_page(url):
-    from parsers.dygod import DygodParser
 
     try:
         content = http_get(url).decode('gb18030')
@@ -36,15 +38,19 @@ def fetch_dygod_country_page(url):
 
 @app_celery.task(queue='dygod')
 def fetch_dygod_detail(url):
-    from parsers.dygod import DygodParser
-
     content = http_get(url).decode('gb18030')
     try:
         info = DygodParser(url).parse(content)
+
+        if info['poster'].startswith('http://'):
+            info['poster'] = fetch_poster(info['poster'])
+
+        for link in info['links']:
+            if link['download_url'].startswith('ftp://') or link['download_url'].startswith('http://'):
+                link['download_url'] = thunder_encode(link['download_url'])
 
         MovieStorage().save(info['name'], info)
         return url, info['name']
     except:
         logging.error("dygod: %s", url, exc_info=True)
     return url, None
-

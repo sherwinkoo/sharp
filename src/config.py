@@ -13,4 +13,6 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json']
 
 
+POSTER_DIR = 'backend/static/posters'
+
 from local_settings import *   # NOQA E402

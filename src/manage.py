@@ -56,5 +56,11 @@ def start_dygod():
     fetch_dygod.delay()
 
 
+@manager.command
+def get_poster(url):
+    from backend.common import fetch_poster
+    print fetch_poster(url)
+
+
 if __name__ == "__main__":
     manager.run()

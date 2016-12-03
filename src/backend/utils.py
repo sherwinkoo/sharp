@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import base64
+
 
 def safe_utf8(string):
     if isinstance(string, unicode):
@@ -21,3 +23,7 @@ def http_get(url):
     )
     r.raise_for_status()
     return r.content
+
+
+def thunder_encode(url):
+    return 'thunder://' + base64.b64encode('AA' + url + 'ZZ')
