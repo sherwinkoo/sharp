@@ -28,7 +28,7 @@ def search_api(keyword):
 
     result = dict()
     for movie, link in movies:
-        if movie.id in result:
+        if movie.id not in result:
             result[movie.id].append(dict(
                 name=movie.name,
                 downlist=[]
