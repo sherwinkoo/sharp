@@ -7,6 +7,8 @@ from flask_script import Manager
 from backend.foundation import app
 from backend.foundation import db
 from backend.models import * # noqa
+from backend.parsers import DygodParser
+
 
 manager = Manager(app)
 
@@ -31,8 +33,6 @@ def add_movie(url):
 
 @manager.command
 def test_parser(filename):
-    from backend.parsers import DygodParser
-
     with open(filename, 'rt') as f:
         content = f.read()
         content = content.decode('gb18030')
@@ -43,9 +43,22 @@ def test_parser(filename):
 
 
 @manager.command
-def test_parse_list(url):
-    from tasks import fetch_dygod_country_page
-    fetch_dygod_country_page(url)
+def test_parse_list():
+    from backend.utils import http_get
+    import time
+
+    for country in ('china', 'oumei', 'rihan'):
+        start = 'http://www.dygod.net/html/gndy/{}/index.html'.format(country)
+
+        url = start
+        for i in range(40):
+            content = http_get(url).decode('gb18030')
+            ulinks, next_page = DygodParser(url).parse_list(content)
+            print url, ulinks
+            if not next_page:
+                break
+            url = next_page
+            time.sleep(0.5)
 
 
 @manager.command

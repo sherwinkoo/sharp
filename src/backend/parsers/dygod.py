@@ -15,6 +15,7 @@ class DygodParser(object):
     def parse_list(self, content):
         soup = BeautifulSoup(content, 'html.parser')
         ulinks = soup.find_all('a', attrs={'class': 'ulink'})
+        ulinks = filter(lambda link: link.attrs.get('title') and link.attrs.get('href', '').endswith('.html'), ulinks)
         for a in soup.find_all('a'):
             if a.text == u'下一页':
                 next_page = self.domain + a.attrs['href']
