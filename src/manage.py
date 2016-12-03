@@ -30,18 +30,16 @@ def add_movie(url):
 
 
 @manager.command
-def test_parser():
-    from parsers import DygodParser
-    from storage import MovieStorage
+def test_parser(filename):
+    from backend.parsers import DygodParser
 
-    with open('108745.html', 'rt') as f:
+    with open(filename, 'rt') as f:
         content = f.read()
+        content = content.decode('gb18030')
 
     parser = DygodParser()
     movie = parser.parse(content)
     pprint(movie)
-
-    MovieStorage().save(movie['name'], movie)
 
 
 @manager.command
