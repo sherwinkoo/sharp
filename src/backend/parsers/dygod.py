@@ -48,6 +48,9 @@ class DygodParser(object):
                 info['country'] = text[5:]
         info['poster'] = zoom.find('img').attrs['src']
 
+        if 'name' not in info:
+            info['name'] = soup.head.title.text.split(u'\u300a')[-1].split(u'\u300b')[0]
+
         link = zoom.find('table').find('tr').find('td').find('a').attrs['href']
         name = '.'.join(link.split('/')[-1].split('.')[:-1])
         info['links'] = [{

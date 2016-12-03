@@ -37,7 +37,7 @@ def test_parser(filename):
         content = f.read()
         content = content.decode('gb18030')
 
-    parser = DygodParser()
+    parser = DygodParser('http://example.com')
     movie = parser.parse(content)
     pprint(movie)
 
