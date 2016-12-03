@@ -38,12 +38,18 @@ def fetch_dygod_country_page(url):
 
 @app_celery.task(queue='dygod')
 def fetch_dygod_detail(url):
+    if not url.endswith('.html'):
+        return url, None
+
     content = http_get(url).decode('gb18030')
     try:
         info = DygodParser(url).parse(content)
 
-        if info['poster'].startswith('http://'):
-            info['poster'] = fetch_poster(info['poster'])
+        try:
+            if info['poster'].startswith('http://'):
+                info['poster'] = fetch_poster(info['poster'])
+        except:
+            pass
 
         for link in info['links']:
             if link['download_url'].startswith('ftp://') or link['download_url'].startswith('http://'):
