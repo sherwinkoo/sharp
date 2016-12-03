@@ -15,11 +15,12 @@ def safe_unicode(string):
     return string
 
 
-def http_get(url):
+def http_get(url, timeout=30):
     import requests
     r = requests.get(
         url,
-        headers={'User-Agent': 'User-Agent Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/602.2.14 (KHTML, like Gecko) Version/10.0.1 Safari/602.2.14'}
+        headers={'User-Agent': 'User-Agent Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/602.2.14 (KHTML, like Gecko) Version/10.0.1 Safari/602.2.14'},
+        timeout=timeout,
     )
     r.raise_for_status()
     return r.content

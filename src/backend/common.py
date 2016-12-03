@@ -9,7 +9,7 @@ from backend.utils import http_get
 def fetch_poster(url):
     from backend.foundation import app
 
-    data = http_get(url)
+    data = http_get(url, timeout=3)
     name = md5.new(data).hexdigest()
     path = os.path.join(app.config['POSTER_DIR'], name)
     with open(path, 'wb') as f:
