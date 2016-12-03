@@ -27,4 +27,4 @@ def http_get(url, timeout=30):
 
 
 def thunder_encode(url):
-    return 'thunder://' + base64.b64encode('AA' + url + 'ZZ')
+    return 'thunder://' + base64.b64encode('AA' + safe_utf8(url) + 'ZZ')
