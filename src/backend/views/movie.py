@@ -1,17 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from pymongo import MongoClient
-
-from flask import Flask
 from flask import jsonify
 from flask import request
 from flask import render_template
 
-from backend.foundation import app
+from backend.foundation import app, db
+from backend.models.movie import Movie, MovieLink
 
-
-client = MongoClient()
-movie_doc = client['movie-db']['movie']
 
 @app.route('/')
 def main():
@@ -26,13 +21,25 @@ def list_view():
 
 @app.route('/api/v1/search/<keyword>/', methods=['GET'])
 def search_api(keyword):
-    keyword = keyword.encode('utf-8')
-    movies = movie_doc.find({'name': {'$regex': '.*{}.*'.format(keyword)}})
-    movies = list(movies)
-    for m in movies:
-        del m['_id']
+    movies = db.session.query(Movie, MovieLink).\
+        filter(Movie.name.like(u'%{}%'.format(keyword))).\
+        filter(Movie.id == MovieLink.movie_id).\
+        all()
 
-    movies = sorted(movies, key=lambda x: x['name'])
+    result = dict()
+    for movie, link in movies:
+        if movie.id in result:
+            result[movie.id].append(dict(
+                name=movie.name,
+                downlist=[]
+            ))
+        result[movie.id]['downlist'].append(dict(
+            name=link.name,
+            source=link.source,
+            download_url=link.url
+        ))
+
+    movies = [data for mid, data in result.iteritems()]
     return jsonify(movies)
 
 
@@ -42,15 +49,10 @@ def movies_list():
     if page < 1:
         page = 1
     page_size = int(request.args.get('page_size', 24))
-    total_size = 1024
+    total_size = Movie.query.count()
 
-    movies = movie_doc.find()
-    movies = list(movies)
-    for m in movies:
-        del m['_id']
-    movies = sorted(movies, key=lambda x: x['name'])
-
-    movies = movies[(page - 1) * page_size:page * page_size]
+    movies = Movie.query.order_by(Movie.name).skip(page * page_size).limit(page_size)
+    movies = [dict(name=movie.name, poster=movie.poster) for movie in movies]
     result = dict(
         movies=movies,
         pagination=dict(
