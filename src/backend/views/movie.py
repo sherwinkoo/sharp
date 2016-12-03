@@ -8,15 +8,9 @@ from backend.foundation import app, db
 from backend.models.movie import Movie, MovieLink
 
 
-@app.route('/')
-def main():
-    return render_template('index.html')
-
-
-@app.route('/list.html')
-def list_view():
-    with open('front/list.html', 'rt') as f:
-        return f.read()
+@app.route('/<string:template_name>')
+def html(template_name):
+    return render_template('{}'.format(template_name))
 
 
 @app.route('/api/v1/search/<keyword>/', methods=['GET'])
@@ -29,10 +23,10 @@ def search_api(keyword):
     result = dict()
     for movie, link in movies:
         if movie.id not in result:
-            result[movie.id].append(dict(
+            result[movie.id] = dict(
                 name=movie.name,
                 downlist=[]
-            ))
+            )
         result[movie.id]['downlist'].append(dict(
             name=link.name,
             source=link.source,
@@ -51,7 +45,7 @@ def movies_list():
     page_size = int(request.args.get('page_size', 24))
     total_size = Movie.query.count()
 
-    movies = Movie.query.order_by(Movie.name).skip(page * page_size).limit(page_size)
+    movies = Movie.query.order_by(Movie.name)[(page - 1) * page_size: page * page_size]
     movies = [dict(name=movie.name, poster=movie.poster) for movie in movies]
     result = dict(
         movies=movies,
