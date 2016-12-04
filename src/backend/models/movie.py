@@ -24,7 +24,7 @@ class MovieLink(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256))
     source = db.Column(db.String(256))
-    url = db.Column(db.String(512))
+    url = db.Column(db.Text())
     movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'))
     movie = db.relationship(
         'Movie',
