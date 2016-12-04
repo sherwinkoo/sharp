@@ -27,7 +27,7 @@ class PiaohuaSpider(scrapy.Spider):
         detail_urls = response.xpath('//div[@id="list"]/dl/dt/a/@href').extract()
         for url in detail_urls:
             yield Request(
-                url="http://www.piaohua.com" + url,
+                url=self.full_url(url, response.url),
                 headers={
                     'Referer': response.url,
                     'Cache-Control': 'max-age=0',
@@ -39,7 +39,10 @@ class PiaohuaSpider(scrapy.Spider):
 
     def parse_detail(self, response):
         item = TentacleItem()
-        item['image_urls'] = response.xpath('//div[@id="showinfo"]/img[1]/@src').extract()
+        item['image_urls'] = [
+            self.full_url(url, response.url)
+            for url in response.xpath('//div[@id="showinfo"]/img[1]/@src').extract()
+        ]
 
         for info in response.xpath('//div[@id="showinfo"]/p/text()').extract():
             info = info.strip('\r\n\t').replace(u'\u3000', ' ')
@@ -76,3 +79,21 @@ class PiaohuaSpider(scrapy.Spider):
 
             item['links'].append(link)
         return item
+
+    def full_url(self, url, referer):
+        import os
+        from urlparse import urlparse
+
+        r = urlparse(referer)
+
+        if url.startswith('http'):
+            return url
+
+        prefix = r.scheme + '://' + r.hostname
+        if not url.startswith('/'):
+            if r.path.endswith('/'):
+                prefix += r.path
+            else:
+                prefix += os.path.dirname(r.path)
+
+        return prefix + url
