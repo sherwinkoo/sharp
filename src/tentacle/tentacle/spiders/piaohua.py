@@ -34,6 +34,18 @@ class PiaohuaSpider(scrapy.Spider):
                     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                 })
 
+        for page in response.xpath(u'//div[@class="page"]/a'):
+            page_name = page.xpath('text()').extract()[0]
+            page_href = page.xpath('@href').extract()[0]
+            if page_name == u'下一页':
+                yield Request(
+                    url=self.full_url(page_href, response.url),
+                    headers={
+                        'Referer': response.url,
+                        'Cache-Control': 'max-age=0',
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                    })
+
         if not detail_urls:
             yield self.parse_detail(response)
 
@@ -92,8 +104,8 @@ class PiaohuaSpider(scrapy.Spider):
         prefix = r.scheme + '://' + r.hostname
         if not url.startswith('/'):
             if r.path.endswith('/'):
-                prefix += r.path
+                url = os.path.join(r.path, url)
             else:
-                prefix += os.path.dirname(r.path)
+                url = os.path.join(os.path.dirname(r.path), url)
 
         return prefix + url
