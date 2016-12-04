@@ -31,6 +31,9 @@ class DygodParser(object):
         zoom = soup.find('div', attrs={'id': 'Zoom'})
         attrs = zoom.find_all('p')
 
+        info['name'] = soup.head.title.text.split(u'\u300a')[-1].split(u'\u300b')[0]
+        info['links'] = []
+
         detail_text = ''
         for attr in attrs:
             detail_text += attr.text.replace(u'\u3000', u' ')
@@ -48,14 +51,12 @@ class DygodParser(object):
                 info['country'] = text[5:]
         info['poster'] = zoom.find('img').attrs['src']
 
-        if 'name' not in info:
-            info['name'] = soup.head.title.text.split(u'\u300a')[-1].split(u'\u300b')[0]
-
-        link = zoom.find('table').find('tr').find('td').find('a').attrs['href']
-        name = '.'.join(link.split('/')[-1].split('.')[:-1])
-        info['links'] = [{
-            'name': name,
-            'download_url': link,
-            'source': self.url,
-        }]
+        for link_table in zoom.find_all('table'):
+            link = link_table.find('tr').find('td').find('a').attrs['href']
+            name = '.'.join(link.split('/')[-1].split('.')[:-1])
+            info['links'].append({
+                'name': name,
+                'download_url': link,
+                'source': self.url,
+            })
         return info
